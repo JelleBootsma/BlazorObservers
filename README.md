@@ -53,6 +53,18 @@ public async ValueTask DisposeAsync()
 
 ```
 
+When changing the size of (one of) the observed element(s), make sure to halt callback execution, as otherwise an infinite loop can appear, and crash your application.
+```csharp
+private async Task ObserverResizeEvent()
+{
+    if (taskReference is null) return;
+    taskReference.HaltTaskTriggering();
+    await MethodThatChangesTheElementSize();
+    taskReference.ResumeTaskTriggering();
+}
+
+```
+
 
 ## Future
 Feature backlog:
