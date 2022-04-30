@@ -16,7 +16,7 @@ namespace BlazorObservers.ObserverLibrary.Services
         {
             _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
             _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-               "import", "./_content/ObserverLibrary/ObserverManager.js").AsTask());
+               "import", "./_content/BlazorObservers/ObserverManager.js").AsTask());
         }
         /// <summary>
         /// Remove an observer using the ObserverTask reference
