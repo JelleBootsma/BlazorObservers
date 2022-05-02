@@ -2,16 +2,16 @@
 
 namespace BlazorObservers.ObserverLibrary.Tasks
 {
-    public class ObserverTask
+    public abstract class ObserverTask<T>
     {
         private bool _paused = false;
-        private readonly Func<Task> _taskFunc;
-        internal DotNetObjectReference<ObserverTask> SelfRef { get; }
+        protected Func<T, Task> _taskFunc;
+        internal DotNetObjectReference<ObserverTask<T>> SelfRef { get; }
         public Guid TaskId { get; } = Guid.NewGuid();
 
-        public ObserverTask(Func<Task> taskFunc)
+        protected ObserverTask(Func<T, Task> taskFunc)
         {
-            _taskFunc = taskFunc ?? throw new ArgumentNullException(nameof(taskFunc));
+            _taskFunc = taskFunc;
             SelfRef = DotNetObjectReference.Create(this);
         }
 
@@ -26,10 +26,10 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         }
 
         [JSInvokable("Execute")]
-        public async Task Execute()
+        public virtual async Task Execute(T jsData)
         {
             if (_paused) return;
-            await _taskFunc();
+            await _taskFunc(jsData);
         }
     }
 }

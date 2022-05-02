@@ -18,27 +18,7 @@ namespace BlazorObservers.ObserverLibrary.Services
             _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
                "import", "./_content/BlazorObservers/ObserverManager.js").AsTask());
         }
-        /// <summary>
-        /// Remove an observer using the ObserverTask reference
-        /// </summary>
-        /// <param name="observerTask"></param>
-        /// <returns></returns>
-        public abstract Task DeregisterObserver(ObserverTask observerTask);
-
-        /// <summary>
-        /// Remove an observer using its Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public abstract Task DeregisterObserver(Guid id);
-
-        /// <summary>
-        /// Create and register a new observer for the given target elements
-        /// </summary>
-        /// <param name="onObserve"></param>
-        /// <param name="targetElement"></param>
-        /// <returns></returns>
-        public abstract Task<ObserverTask> RegisterObserver(Func<Task> onObserve, params ElementReference[] targetElements);
+        
 
         /// <summary>
         /// Dispose the JS module reference, if it has been created
