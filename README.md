@@ -24,7 +24,6 @@ builder.Services.AddResizeObserverRegistrationService();
 
 And add the using statements to the imports.razor
 ```razor
-
 @using BlazorObservers.ObserverLibrary.JsModels
 @using BlazorObservers.ObserverLibrary.Services
 @using BlazorObservers.ObserverLibrary.Tasks
