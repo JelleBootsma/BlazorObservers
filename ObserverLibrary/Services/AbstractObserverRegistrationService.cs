@@ -39,6 +39,17 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// <returns></returns>
         public async ValueTask DisposeAsync()
         {
+            await DisposeAsyncCore();
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Perform actual Disposing
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
             if (_moduleTask.IsValueCreated)
             {
                 var module = await _moduleTask.Value;
