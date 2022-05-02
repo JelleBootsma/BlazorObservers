@@ -9,9 +9,22 @@ namespace BlazorObservers.ObserverLibrary.Services
     /// </summary>
     public abstract class AbstractObserverRegistrationService : IAsyncDisposable
     {
+        /// <summary>
+        /// Js runtime to use for interop
+        /// </summary>
         protected readonly IJSRuntime _jsRuntime;
+        /// <summary>
+        /// Reference to the ES6 module
+        /// </summary>
         protected readonly Lazy<Task<IJSObjectReference>> _moduleTask;
 
+        /// <summary>
+        /// Base constructor of ObserverRegistrationServices. 
+        /// 
+        /// This constructor will create the task for async loading of the ES6 Module
+        /// </summary>
+        /// <param name="jsRuntime"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         protected AbstractObserverRegistrationService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));

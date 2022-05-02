@@ -18,11 +18,18 @@ namespace BlazorObservers.ObserverLibrary.JsModels
     {
         [JsonPropertyName("contentRect")]
         public JsDomRect ContentRect { get; set; }
+        [JsonPropertyName("borderBoxSize")]
+        public JsResizeObserverSize BorderBoxSize { get; set; }
+        [JsonPropertyName("contentBoxSize")]
+        public JsResizeObserverSize ContentBoxSize { get; set; }
+
         public ElementReference? TargetElement { get; set; }
         [JsonPropertyName("targetTrackingId")]
         public string? TargetElementTrackingId { get; set; }
     }
-
+    /// <summary>
+    /// Model for ResizeObserverSize javascript models
+    /// </summary>
     public struct JsResizeObserverSize {
         [JsonPropertyName("blockSize")]
         public double BlockSize { get; set; }
