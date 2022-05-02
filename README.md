@@ -1,5 +1,9 @@
 # BlazorObservers
 
+BlazorObservers is a set of Blazor wrappers around the JavaScript Observer functionality. 
+
+Currently only the ResizeObserver is supported.  
+
 ## Introduction
 Blazor not support resize events. 
 This means that usually, a complicated JSInterop will be required, which adds a lot of boilerplate code to the project.
@@ -20,8 +24,10 @@ builder.Services.AddResizeObserverRegistrationService();
 
 And add the using statements to the imports.razor
 ```razor
-@using BlazorObservers.ObserverLibrary.Tasks
+
+@using BlazorObservers.ObserverLibrary.JsModels
 @using BlazorObservers.ObserverLibrary.Services
+@using BlazorObservers.ObserverLibrary.Tasks
 ```
 
 Then you can inject the ResizeObserverRegistrationService into your razor component.
@@ -41,7 +47,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (firstRender)
         taskReference = await ResizeObserverRegistrationService.RegisterObserver(
-            async () => Console.WriteLine("Hello resizable world"), 
+            async (entries) => Console.WriteLine("Hello resizable world"), 
             targetElement);
 }
 
@@ -53,9 +59,17 @@ public async ValueTask DisposeAsync()
 
 ```
 
-When changing the size of (one of) the observed element(s), make sure to halt callback execution, as otherwise an infinite loop can appear, and crash your application.
+When changing the size of (one of) the observed element(s) in your callback method, make sure to halt callback execution, as otherwise an infinite loop can appear, and crash your application.
 ```csharp
-private async Task ObserverResizeEvent()
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        taskReference = await ResizeObserverRegistrationService.RegisterObserver(ObserverResizeEvent, TabBar);
+    }
+}
+
+private async Task ObserverResizeEvent(JsResizeObserverEntry[] entries)
 {
     if (taskReference is null) return;
     taskReference.HaltTaskTriggering();
@@ -67,10 +81,14 @@ private async Task ObserverResizeEvent()
 
 
 ## Future
-Feature backlog:
+Completed:
+- [x] Make ResizeObserver callback parameters available
+- [x] Auto-package
 
-- [ ] Make ResizeObserver callback parameters available
+Feature backlog:
+- [ ] Add compatibility with element rerendering, so that the ResizeObserver stops observing the original element, and starts observing the newly rendered element.
+- [ ] Add ExecuteFinal option to HaltTaskTriggering, so that the last callback with the accurate size change is executed.
 - [ ] Add more observers, such as [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) and [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver)
 - [ ] Unit testing
 - [ ] Performance analysis
-- [ ] Auto-package
+
