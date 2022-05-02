@@ -18,7 +18,6 @@ Currently only Resize observer is present.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://gitlab.authore.com/author-e/blazorobservers</PackageProjectUrl>
     <RepositoryUrl>https://gitlab.authore.com/author-e/blazorobservers</RepositoryUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
