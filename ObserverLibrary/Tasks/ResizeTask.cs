@@ -1,10 +1,6 @@
 ﻿using BlazorObservers.ObserverLibrary.JsModels;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.JSInterop;
 
 namespace BlazorObservers.ObserverLibrary.Tasks
 {
@@ -16,6 +12,7 @@ namespace BlazorObservers.ObserverLibrary.Tasks
             ConnectedElementes = new Dictionary<Guid, ElementReference>();
         }
 
+        [JSInvokable("Execute")]
         public override Task Execute(JsResizeObserverEntry[] jsData)
         {
             foreach (var dataElement in jsData)
@@ -30,6 +27,6 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         }
     }
 
-   
+
 
 }
