@@ -23,6 +23,12 @@ namespace BlazorObservers.ObserverLibrary.Services
         private static readonly ConcurrentDictionary<Guid, ResizeTask> _registeredTasks = new();
         private static readonly ConcurrentDictionary<Guid, ElementRegistration> _registeredElements = new();
 
+        /// <summary>
+        /// Constructor of a ResizeObserverRegistrationService. 
+        /// 
+        /// Should not be used by user code, but service should be injected using Dependency Injection.
+        /// </summary>
+        /// <param name="jsRuntime"></param>
         public ResizeObserverRegistrationService(IJSRuntime jsRuntime): base(jsRuntime)
         {
         }
@@ -95,8 +101,7 @@ namespace BlazorObservers.ObserverLibrary.Services
         public async Task DeregisterObserver(Guid id)
         {
             var module = await _moduleTask.Value;
-            ResizeTask? taskRef;
-            if (_registeredTasks.Remove(id, out taskRef))
+            if (_registeredTasks.Remove(id, out ResizeTask? taskRef))
             {
                 taskRef?.SelfRef.Dispose();
             }

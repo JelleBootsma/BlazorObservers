@@ -5,10 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-
-/// <summary>
-/// Namespace for models which mirror models in Javascript
-/// </summary>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace BlazorObservers.ObserverLibrary.JsModels
 {
     /// <summary>
@@ -17,7 +14,9 @@ namespace BlazorObservers.ObserverLibrary.JsModels
     public class JsResizeObserverEntry
     {
         [JsonPropertyName("contentRect")]
+
         public JsDomRect ContentRect { get; set; }
+
         [JsonPropertyName("borderBoxSize")]
         public JsResizeObserverSize BorderBoxSize { get; set; }
         [JsonPropertyName("contentBoxSize")]
@@ -69,3 +68,4 @@ namespace BlazorObservers.ObserverLibrary.JsModels
         public double Left { get; set; }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
