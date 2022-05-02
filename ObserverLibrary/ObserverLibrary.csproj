@@ -13,7 +13,18 @@
     <Product>ObserverLibrary</Product>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageId>BlazorObservers</PackageId>
+    <Description>Package of </Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://gitlab.authore.com/author-e/blazorobservers</PackageProjectUrl>
+    <RepositoryUrl>https://gitlab.authore.com/author-e/blazorobservers</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\JBDocs\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 
   <ItemGroup>
