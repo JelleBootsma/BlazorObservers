@@ -35,6 +35,7 @@ stages:
   - build
   - test
   - doxygen
+  - deploy
 
 
 # ### Define global cache rule
@@ -172,3 +173,16 @@ doxygen:
       - $CI_PROJECT_DIR\Doxygen\*.zip
   
   
+  
+ 
+deploy:
+  stage: deploy
+  script:
+    - dotnet pack -c Release
+    - $exists = dotnet nuget list source |Select-String -Pattern "gitlabAE"
+    - if ($exists) {dotnet nuget remove source gitlabAE}
+    - dotnet nuget add source "${CI_API_V4_URL}/projects/43/packages/nuget/index.json" --name gitlabAE --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+    - dotnet nuget push "${CI_PROJECT_DIR}\ObserverLibrary\bin\Release\*.nupkg" --source gitlabAE
+    - dotnet nuget remove source gitlabAE
+  only:
+    - main
