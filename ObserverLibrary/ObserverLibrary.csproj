@@ -13,7 +13,8 @@
     <Product>ObserverLibrary</Product>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageId>BlazorObservers</PackageId>
-    <Description>Package of </Description>
+    <Description>Package of Blazor wrappers for Javascript Observers.
+Currently only Resize observer is present.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://gitlab.authore.com/author-e/blazorobservers</PackageProjectUrl>
     <RepositoryUrl>https://gitlab.authore.com/author-e/blazorobservers</RepositoryUrl>
