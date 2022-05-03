@@ -72,10 +72,83 @@ namespace BlazorObservers.ObserverLibrary.Services
             foreach (var newRef in newReferences)
             {
                 _registeredElements[newRef.Key] = newRef.Value;
-                task.ConnectedElementes[newRef.Key] = newRef.Value.ElementReference;
+                task.ConnectedElements[newRef.Key] = newRef.Value.ElementReference;
             }
 
             return task;
+        }
+
+        /// <summary>
+        /// Add a specified element to the list of observed elements of a specific task.
+        /// 
+        /// If the element is not successfully added return false.
+        /// Otherwise return true.
+        /// </summary>
+        /// <param name="observerTask"></param>
+        /// <param name="newElement"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">If observerTask is null</exception>
+        public Task<bool> StartObserving(ResizeTask observerTask, ElementReference newElement)
+        {
+            if (observerTask is null)
+                throw new ArgumentNullException(nameof(observerTask));
+            if (observerTask.ConnectedElements.Any(x => x.Value.Equals(newElement)))
+                return Task.FromResult(true); // Element is already observed
+
+            return DoStartObserving(observerTask, newElement);
+        }
+
+        private async Task<bool> DoStartObserving(ResizeTask observerTask, ElementReference element)
+        {
+            var module = await _moduleTask.Value;
+            var newTrackingIdString = await module.InvokeAsync<string?>("ObserverManager.StartObserving", observerTask.TaskId.ToString(), element);
+            if (newTrackingIdString is null || !Guid.TryParse(newTrackingIdString, out Guid newTrackingId)) return false;
+            var elRegistration = new ElementRegistration(element, observerTask);
+            _registeredElements[newTrackingId] = elRegistration;
+            observerTask.ConnectedElements[newTrackingId] = element;
+            return true;
+        }
+
+
+
+        /// <summary>
+        /// Remove a specified element from the list of observed elements of a specific task.
+        /// 
+        /// If the element is successfully remove, and was present in the observed elements list, return true.
+        /// Otherwise, return false.
+        /// </summary>
+        /// <param name="observerTask"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">If observerTask is null</exception>
+        public Task<bool> StopObserving(ResizeTask observerTask, ElementReference element)
+        {
+            if (observerTask is null)
+                throw new ArgumentNullException(nameof(observerTask));
+            if (!observerTask.ConnectedElements.Any(x => x.Value.Equals(element)))
+                return Task.FromResult(false);
+
+            return DoStopObserving(observerTask, element);
+        }
+
+
+        private async Task<bool> DoStopObserving(ResizeTask observerTask, ElementReference element)
+        {
+            var module = await _moduleTask.Value;
+            var successRemovedByJs = await module.InvokeAsync<bool>("ObserverManager.StopObserving", observerTask.TaskId.ToString(), element);
+
+            // Remove registration
+            var toRemove = _registeredElements.Where(x => x.Value.ElementReference.Equals(element) && x.Value.TaskReference == observerTask);
+            foreach (var reg in toRemove)
+            {
+                _registeredElements.Remove(reg.Key, out _);
+            }
+            var toRemoveFromTask = observerTask.ConnectedElements.Where(x => x.Value.Equals(element));
+            foreach (var connectedElement in toRemoveFromTask)
+            {
+                observerTask.ConnectedElements.Remove(connectedElement.Key, out _);
+            }
+            return successRemovedByJs;
         }
 
         /// <summary>
@@ -104,6 +177,7 @@ namespace BlazorObservers.ObserverLibrary.Services
             if (_registeredTasks.Remove(id, out ResizeTask? taskRef))
             {
                 taskRef?.SelfRef.Dispose();
+                taskRef?.ConnectedElements.Clear();
             }
             await module.InvokeVoidAsync("ObserverManager.RemoveResizeObserver", id.ToString());
             if (taskRef is not null)
