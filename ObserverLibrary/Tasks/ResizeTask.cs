@@ -11,10 +11,10 @@ namespace BlazorObservers.ObserverLibrary.Tasks
     /// </summary>
     public class ResizeTask : ObserverTask<JsResizeObserverEntry[]>
     {
-        internal Dictionary<Guid, ElementReference> ConnectedElementes { get; set; }
+        internal Dictionary<Guid, ElementReference> ConnectedElements { get; set; }
         internal ResizeTask(Func<JsResizeObserverEntry[], Task> taskFunc) : base(taskFunc)
         {
-            ConnectedElementes = new Dictionary<Guid, ElementReference>();
+            ConnectedElements = new Dictionary<Guid, ElementReference>();
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace BlazorObservers.ObserverLibrary.Tasks
             foreach (var dataElement in jsData)
             {
                 if (Guid.TryParse(dataElement.TargetElementTrackingId, out Guid trackingId) &&
-                    ConnectedElementes.ContainsKey(trackingId))
+                    ConnectedElements.ContainsKey(trackingId))
                 {
-                    dataElement.TargetElement = ConnectedElementes[trackingId];
+                    dataElement.TargetElement = ConnectedElements[trackingId];
                 }
             }
             return base.Execute(jsData);

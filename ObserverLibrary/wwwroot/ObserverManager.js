@@ -57,7 +57,35 @@ export class ObserverManager {
     }
 
     /**
-     * Generate serializable object for DotNEt
+     * Add a new element to an existing observer
+     * @param {string} observerId
+     * @param {Element} element
+     */
+    static StartObserving(observerId, element) {
+
+        if (!this.ActiveResizeObservers[observerId]) return null;
+        let obs = this.ActiveResizeObservers[observerId];
+        let elementTrackingId = this.#GetGuid();
+        element.setAttribute("ResizeObservationRegistrationGuid", elementTrackingId);
+        obs.observe(element);
+        return elementTrackingId;
+    }
+
+    /**
+     * Add a new element to an existing observer
+     * @param {string} observerId
+     * @param {Element} element
+     */
+    static StopObserving(observerId, element) {
+        if (!this.ActiveResizeObservers[observerId]) return false;
+        let obs = this.ActiveResizeObservers[observerId];
+        obs.unobserve(element);
+        element.removeAttribute("ResizeObservationRegistrationGuid");
+        return true;
+    }
+
+    /**
+     * Generate serializable object for DotNET
      * @param {ResizeObserverEntry} callbackEl
      * @returns {object} Serialize object with all required info for dotNet
      */

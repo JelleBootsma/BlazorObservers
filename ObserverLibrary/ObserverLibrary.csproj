@@ -7,7 +7,7 @@
     <RootNamespace>BlazorObservers.ObserverLibrary</RootNamespace>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <Version>0.2.3</Version>
+    <Version>0.3.0</Version>
     <Company>Author-e</Company>
     <Authors>JelleBootsma</Authors>
     <Product>ObserverLibrary</Product>
