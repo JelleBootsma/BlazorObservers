@@ -31,7 +31,7 @@ And add the using statements to the imports.razor
 
 Then you can inject the ResizeObserverRegistrationService into your razor component.
 
-Now register an element with the OnAfterREnderAsync method, and make sure the registration is removed on disposal.
+Now register an element with the OnAfterRenderAsync method, and make sure the registration is removed on disposal.
 ```csharp
 
 @inject ResizeObserverRegistrationService ResizeObserverRegistrationService
