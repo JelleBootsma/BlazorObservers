@@ -23,3 +23,17 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+  doxygen:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Doxygen Action
+      # You may pin to the exact commit or the version.
+      # uses: mattnotmitt/doxygen-action@cdd5472f8e48e141b89d2633c1ae72991a21cb6a
+        uses: mattnotmitt/doxygen-action@1.9.3
+        with:
+          # Path to Doxyfile
+          doxyfile-path: ./Doxyfile
+          # Working directory
+          working-directory: .
