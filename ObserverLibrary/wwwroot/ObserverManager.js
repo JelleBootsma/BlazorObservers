@@ -6,6 +6,7 @@ export class ObserverManager {
 
     /**
      * Generate a Guid v4 (RFC4122)
+     * 
      * Using code from https://stackoverflow.com/a/2117523
      * @returns {string} new Guid
      */
