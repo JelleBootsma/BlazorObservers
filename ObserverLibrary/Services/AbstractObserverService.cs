@@ -7,7 +7,7 @@ namespace BlazorObservers.ObserverLibrary.Services
     /// <summary>
     /// Abstract base for all ObserverRegistractionServices
     /// </summary>
-    public abstract class AbstractObserverRegistrationService : IAsyncDisposable
+    public abstract class AbstractObserverService : IAsyncDisposable
     {
         /// <summary>
         /// Js runtime to use for interop
@@ -25,7 +25,7 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// </summary>
         /// <param name="jsRuntime"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        protected AbstractObserverRegistrationService(IJSRuntime jsRuntime)
+        protected AbstractObserverService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime ?? throw new ArgumentNullException(nameof(jsRuntime));
             _moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(

@@ -6,7 +6,7 @@ export class ObserverManager {
 
     /**
      * Generate a Guid v4 (RFC4122)
-     * Using code adapted from https://stackoverflow.com/a/2117523
+     * Using code from https://stackoverflow.com/a/2117523
      * @returns {string} new Guid
      */
     static #GetGuid() {
@@ -29,7 +29,7 @@ export class ObserverManager {
         let callback = (entries, obsCallback) => {
             let dotNetArguments = [];
             for (let entry of entries) {
-                dotNetArguments.push(this.#CreateDotNetCallbackObject(entry))
+                dotNetArguments.push(this.#CreateDotNetCallbackObject(entry, id))
             }
             dotNetRef.invokeMethodAsync("Execute", dotNetArguments);
         }
@@ -38,7 +38,7 @@ export class ObserverManager {
 
         for (let el of els) {
             let elementTrackingId = this.#GetGuid();
-            el.setAttribute("ResizeObservationRegistrationGuid", elementTrackingId);
+            el.setAttribute(this.#GetResizeTrackingAttributeName(id), elementTrackingId);
             ids.push(elementTrackingId);
             obs.observe(el);
         }
@@ -66,7 +66,7 @@ export class ObserverManager {
         if (!this.ActiveResizeObservers[observerId]) return null;
         let obs = this.ActiveResizeObservers[observerId];
         let elementTrackingId = this.#GetGuid();
-        element.setAttribute("ResizeObservationRegistrationGuid", elementTrackingId);
+        element.setAttribute(this.#GetResizeTrackingAttributeName(observerId), elementTrackingId);
         obs.observe(element);
         return elementTrackingId;
     }
@@ -80,22 +80,31 @@ export class ObserverManager {
         if (!this.ActiveResizeObservers[observerId]) return false;
         let obs = this.ActiveResizeObservers[observerId];
         obs.unobserve(element);
-        element.removeAttribute("ResizeObservationRegistrationGuid");
+        element.removeAttribute(this.#GetResizeTrackingAttributeName(observerId));
         return true;
     }
 
     /**
      * Generate serializable object for DotNET
      * @param {ResizeObserverEntry} callbackEl
+     * @param {string} observerId
      * @returns {object} Serialize object with all required info for dotNet
      */
-    static #CreateDotNetCallbackObject(callbackEl) {
+    static #CreateDotNetCallbackObject(callbackEl, observerId) {
         let result = {};
         result.borderBoxSize = this.#ConvertResizeObserverSizeObject(callbackEl.borderBoxSize[0]);
         result.contentBoxSize = this.#ConvertResizeObserverSizeObject(callbackEl.contentBoxSize[0]);
         result.contentRect = callbackEl.contentRect;
-        result.targetTrackingId = callbackEl.target.getAttribute("ResizeObservationRegistrationGuid");
+        result.targetTrackingId = callbackEl.target.getAttribute(this.#GetResizeTrackingAttributeName(observerId));
         return result;
+    }
+
+    /**
+     * Get the attribute name used to track elements belonging to a specific observer
+     * @param {string} observerId
+     */
+    static #GetResizeTrackingAttributeName(observerId) {
+        return `ResizeElementTrackingId-${observerId}`;
     }
 
     /**

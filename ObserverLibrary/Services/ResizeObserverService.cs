@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.JSInterop;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
-using Microsoft.AspNetCore.Components;
+﻿using BlazorObservers.ObserverLibrary.JsModels;
 using BlazorObservers.ObserverLibrary.Tasks;
-using BlazorObservers.ObserverLibrary.JsModels;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using System.Collections.Concurrent;
 
 namespace BlazorObservers.ObserverLibrary.Services
 {
     /// <summary>
     /// Service to manage resize observer registrations
     /// 
-    /// With this, you can execute dotNET functions on element resize.
-    /// WARNING: Sets ResizeObservationRegistrationGuid attribute on tracked elements. 
-    /// If this attribute is used for a different purpose, the functionality might break
+    /// With this, you can execute dotNET functions on element resize. 
+    /// 
     /// </summary>
-    public class ResizeObserverRegistrationService : AbstractObserverRegistrationService
+    public class ResizeObserverService : AbstractObserverService
     {
         private static readonly ConcurrentDictionary<Guid, ResizeTask> _registeredTasks = new();
         private static readonly ConcurrentDictionary<Guid, ElementRegistration> _registeredElements = new();
@@ -29,8 +23,21 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// Should not be used by user code, but service should be injected using Dependency Injection.
         /// </summary>
         /// <param name="jsRuntime"></param>
-        public ResizeObserverRegistrationService(IJSRuntime jsRuntime): base(jsRuntime)
+        public ResizeObserverService(IJSRuntime jsRuntime) : base(jsRuntime)
         {
+        }
+
+        /// <summary>
+        /// Register a function to execute on resize of any one of the elements
+        /// </summary>
+        /// <param name="onObserve">Function to execute on resize</param>
+        /// <param name="targetElements">Elements to observe</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Thrown if any of the arguments is null</exception>
+        /// <exception cref="ArgumentException">Thrown if targetElements is an empty array</exception>
+        public Task<ResizeTask> RegisterObserver(Action<JsResizeObserverEntry[]> onObserve, params ElementReference[] targetElements)
+        {
+            return RegisterObserver((entries) => { onObserve(entries); return Task.CompletedTask; }, targetElements);
         }
 
         /// <summary>
@@ -48,9 +55,9 @@ namespace BlazorObservers.ObserverLibrary.Services
 
             if (targetElements is null)
                 throw new ArgumentNullException(nameof(targetElements));
-            
 
-            if (targetElements.Length == 0) 
+
+            if (targetElements.Length == 0)
                 throw new ArgumentException("At least 1 element must be observed");
             return DoObserverRegistration(onObserve, targetElements);
         }
@@ -161,7 +168,7 @@ namespace BlazorObservers.ObserverLibrary.Services
         {
             if (observerTask is null)
                 throw new ArgumentNullException(nameof(observerTask));
-            
+
 
             return DeregisterObserver(observerTask.TaskId);
         }
@@ -188,7 +195,7 @@ namespace BlazorObservers.ObserverLibrary.Services
                     _registeredElements.Remove(registration.Key, out _);
                 }
             }
-            
+
         }
 
     }

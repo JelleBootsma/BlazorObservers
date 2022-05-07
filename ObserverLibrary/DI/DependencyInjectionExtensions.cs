@@ -13,9 +13,9 @@ namespace BlazorObservers.ObserverLibrary.DI
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddResizeObserverRegistrationService(this IServiceCollection services)
+        public static IServiceCollection AddResizeObserverService(this IServiceCollection services)
         {
-            return services.AddScoped<ResizeObserverRegistrationService>();
+            return services.AddScoped<ResizeObserverService>();
         }
     }
 }
