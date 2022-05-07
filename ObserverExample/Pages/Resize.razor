@@ -1,12 +1,14 @@
 ﻿@page "/resize"
-@inject ResizeObserverRegistrationService ResizeObserverRegistrationService
+@inject ResizeObserverService ResizeService
 @implements IAsyncDisposable
 
 <PageTitle>Resize</PageTitle>
 
 <h1>Resize</h1>
 
-<div @ref=div1 style=@($"width: {width1}px; height: {height1}px; background-color: red;")>
+<button @onclick=RandomizeSizes>Randomize sizes</button>
+
+<div @ref=div1 style=@($"width: {width1}px; height: {height1}px; background-color: darkorchid;")>
     <strong>
         Target div 1;<br />
 
@@ -16,7 +18,7 @@
     </strong>
 </div>
 
-<div @ref=div2 style=@($"width: {width2}px; height: {height2}px; background-color: DarkOliveGreen;")>
+<div @ref=div2 style=@($"width: {width2}px; height: {height2}px; background-color: khaki;")>
     <strong>
         Target div 2;
         <br />
@@ -44,7 +46,16 @@
 
     private ResizeTask? taskReference;
 
-    private async Task UpdateDisplayField(JsResizeObserverEntry[] entries)
+    private void RandomizeSizes()
+    {
+        width1 = Random.Shared.Next(200, 600);
+        width2 = Random.Shared.Next(200, 600);
+        height1 = Random.Shared.Next(100, 300);
+        height2 = Random.Shared.Next(100, 300);
+
+    }
+
+    private void UpdateDisplayField(JsResizeObserverEntry[] entries)
     {
         foreach (var entry in entries)
         {
@@ -68,7 +79,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            taskReference = await ResizeObserverRegistrationService.RegisterObserver(
+            taskReference = await ResizeService.RegisterObserver(
                 UpdateDisplayField, 
                 new ElementReference?[]{div1, div2}
                     .Where(x => x is not null)
@@ -79,6 +90,6 @@
     public async ValueTask DisposeAsync()
     {
         if (taskReference is not null)
-            await ResizeObserverRegistrationService.DeregisterObserver(taskReference);
+            await ResizeService.DeregisterObserver(taskReference);
     }
 }

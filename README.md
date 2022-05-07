@@ -13,13 +13,13 @@ This allows efficient and clean code to execute dotNET methods on element(s) res
 
 ## Usage
 
-First add the ResizeObserverRegistrationService to the dependency injection.
+First add the ResizeObserverService to the dependency injection.
 ```csharp
 using BlazorObservers.ObserverLibrary.DI;
 
 ...
 
-builder.Services.AddResizeObserverRegistrationService();
+builder.Services.AddResizeObserverService();
 ```
 
 And add the using statements to the imports.razor
@@ -29,12 +29,12 @@ And add the using statements to the imports.razor
 @using BlazorObservers.ObserverLibrary.Tasks
 ```
 
-Then you can inject the ResizeObserverRegistrationService into your razor component.
+Then you can inject the ResizeObserverService into your razor component.
 
 Now register an element with the OnAfterRenderAsync method, and make sure the registration is removed on disposal.
 ```csharp
 
-@inject ResizeObserverRegistrationService ResizeObserverRegistrationService
+@inject ResizeObserverService ResizeService
 @implements IAsyncDisposable
 
 <div @ref="targetElement" style="width: 100%; height: 100%; background-color: green;"></div>
@@ -45,7 +45,7 @@ private ObserverTask? taskReference;
 protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (firstRender)
-        taskReference = await ResizeObserverRegistrationService.RegisterObserver(
+        taskReference = await ResizeService.RegisterObserver(
             async (entries) => Console.WriteLine("Hello resizable world"), 
             targetElement);
 }
@@ -53,7 +53,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
 public async ValueTask DisposeAsync()
 {
     if (taskReference is not null)
-        await ResizeObserverRegistrationService.DeregisterObserver(taskReference);
+        await ResizeService.DeregisterObserver(taskReference);
 }
 
 ```
@@ -64,7 +64,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (firstRender)
     {
-        taskReference = await ResizeObserverRegistrationService.RegisterObserver(ObserverResizeEvent, TabBar);
+        taskReference = await ResizeService.RegisterObserver(ObserverResizeEvent, TabBar);
     }
 }
 
