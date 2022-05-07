@@ -1,0 +1,84 @@
+﻿@page "/resize"
+@inject ResizeObserverRegistrationService ResizeObserverRegistrationService
+@implements IAsyncDisposable
+
+<PageTitle>Resize</PageTitle>
+
+<h1>Resize</h1>
+
+<div @ref=div1 style=@($"width: {width1}px; height: {height1}px; background-color: red;")>
+    <strong>
+        Target div 1;<br />
+
+        Current size from observer:<br />
+        Width @readWidth1;
+        Height @readHeight1;
+    </strong>
+</div>
+
+<div @ref=div2 style=@($"width: {width2}px; height: {height2}px; background-color: DarkOliveGreen;")>
+    <strong>
+        Target div 2;
+        <br />
+
+        Current size from observer:<br />
+        Width @readWidth2;
+        Height @readHeight2;
+    </strong>
+</div>
+
+@code {
+    ElementReference? div1;
+    double width1 = 400;
+    double height1 = 200;
+
+    double readWidth1 = 0;
+    double readHeight1 = 0;
+
+    ElementReference? div2;
+    double width2 = 400;
+    double height2 = 200;
+
+    double readWidth2 = 0;
+    double readHeight2 = 0;
+
+    private ResizeTask? taskReference;
+
+    private async Task UpdateDisplayField(JsResizeObserverEntry[] entries)
+    {
+        foreach (var entry in entries)
+        {
+            if (!entry.TargetElement.HasValue) continue;
+
+            if (entry.TargetElement.Value.Equals(div1))
+            {
+                readHeight1 = entry.ContentRect.Height;
+                readWidth1 = entry.ContentRect.Width;
+            }
+            else if (entry.TargetElement.Value.Equals(div2))
+            {
+                readHeight2 = entry.ContentRect.Height;
+                readWidth2 = entry.ContentRect.Width;
+            }
+        }
+        StateHasChanged();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            taskReference = await ResizeObserverRegistrationService.RegisterObserver(
+                UpdateDisplayField, 
+                new ElementReference?[]{div1, div2}
+                    .Where(x => x is not null)
+                    .Cast<ElementReference>()
+                    .ToArray());
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (taskReference is not null)
+            await ResizeObserverRegistrationService.DeregisterObserver(taskReference);
+    }
+}

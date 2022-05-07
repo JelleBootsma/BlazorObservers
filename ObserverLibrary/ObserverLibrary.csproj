@@ -22,12 +22,6 @@ Currently only Resize observer is present.</Description>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\..\JBDocs\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
 
 
   <ItemGroup>

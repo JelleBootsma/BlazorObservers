@@ -83,9 +83,9 @@ private async Task ObserverResizeEvent(JsResizeObserverEntry[] entries)
 Completed:
 - [x] Make ResizeObserver callback parameters available
 - [x] Auto-package
+- [x] Add compatibility with element rerendering, so that the ResizeObserver stops observing the original element, and starts observing the newly rendered element.
 
 Feature backlog:
-- [ ] Add compatibility with element rerendering, so that the ResizeObserver stops observing the original element, and starts observing the newly rendered element.
 - [ ] Add ExecuteFinal option to HaltTaskTriggering, so that the last callback with the accurate size change is executed.
 - [ ] Add more observers, such as [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) and [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver)
 - [ ] Unit testing
