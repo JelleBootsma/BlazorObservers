@@ -9,6 +9,10 @@ namespace BlazorObservers.ObserverLibrary.Tasks
     public abstract class ObserverTask<T>
     {
         private bool _paused = false;
+        private bool _delayTriggering = false;
+        private int _delay = 0;
+        private ulong _executionCount = 0;
+
         private protected Func<T, ValueTask> _taskFunc;
         internal DotNetObjectReference<ObserverTask<T>> SelfRef { get; }
         /// <summary>
@@ -21,8 +25,29 @@ namespace BlazorObservers.ObserverLibrary.Tasks
             _taskFunc = taskFunc;
             SelfRef = DotNetObjectReference.Create(this);
         }
+
+        /// <summary>
+        /// If enabled, a delay of the specified amount of ms will be awaited. 
+        /// Then the delegate will only be executed, if the trigger is still the latest trigger.
+        /// 
+        /// This means that in during high-frequency resizing, the callback will be executed only once.
+        /// 
+        /// Use ResumeTaskTriggering() to resume regular task triggering.
+        /// </summary>
+        /// <param name="delay"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public void OnlyTriggerLast(int delay)
+        {
+            if (delay < 0) throw new ArgumentException("Delay can not be negative");
+            _paused = false;
+            _delay = delay;
+            _delayTriggering = true;
+        }
+
         /// <summary>
         /// Stop triggering of C# task
+        /// 
+        /// Triggering of task can be resumed using ResumeTaskTriggering()
         /// </summary>
         public void HaltTaskTriggering()
         {
@@ -30,11 +55,12 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         }
 
         /// <summary>
-        /// Result triggering of C# task
+        /// Resume regular triggering of C# task
         /// </summary>
         public void ResumeTaskTriggering()
         {
             _paused = false;
+            _delayTriggering = false;
         }
 
         /// <summary>
@@ -45,10 +71,25 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         /// <param name="jsData"></param>
         /// <returns></returns>
         [JSInvokable("Execute")]
-        public virtual ValueTask Execute(T jsData)
+        public virtual async ValueTask Execute(T jsData)
         {
-            if (_paused) return ValueTask.CompletedTask;
-            return _taskFunc(jsData);
+            if (_paused) return;
+            if (!_delayTriggering)
+            {
+                await _taskFunc(jsData);
+                return;
+            }
+            _executionCount++;
+            ulong runNumber = _executionCount;
+            
+            // Wait for the delay
+            await Task.Delay(_delay);
+
+            // Check if this execution is still the latest run
+            if (runNumber < _executionCount) return;
+            
+            // Execute
+            await _taskFunc(jsData);
         }
     }
 }
