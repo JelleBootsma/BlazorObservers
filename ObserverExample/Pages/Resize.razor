@@ -82,8 +82,7 @@
             taskReference = await ResizeService.RegisterObserver(
                 UpdateDisplayField, 
                 new ElementReference?[]{div1, div2}
-                    .Where(x => x is not null)
-                    .Cast<ElementReference>()
+                    .OfType<ElementReference>()
                     .ToArray());
     }
 

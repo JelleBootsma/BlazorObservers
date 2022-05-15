@@ -12,7 +12,7 @@ namespace BlazorObservers.ObserverLibrary.Tasks
     public class ResizeTask : ObserverTask<JsResizeObserverEntry[]>
     {
         internal Dictionary<Guid, ElementReference> ConnectedElements { get; set; }
-        internal ResizeTask(Func<JsResizeObserverEntry[], Task> taskFunc) : base(taskFunc)
+        internal ResizeTask(Func<JsResizeObserverEntry[], ValueTask> taskFunc) : base(taskFunc)
         {
             ConnectedElements = new Dictionary<Guid, ElementReference>();
         }
@@ -25,7 +25,7 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         /// <param name="jsData"></param>
         /// <returns></returns>
         [JSInvokable("Execute")]
-        public override Task Execute(JsResizeObserverEntry[] jsData)
+        public override ValueTask Execute(JsResizeObserverEntry[] jsData)
         {
             foreach (var dataElement in jsData)
             {

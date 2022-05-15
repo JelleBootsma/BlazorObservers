@@ -28,7 +28,7 @@ namespace BlazorObservers.ObserverLibrary.Services
         }
 
         /// <summary>
-        /// Register a function to execute on resize of any one of the elements
+        /// Register a synchronous function to execute on resize of any one of the elements
         /// </summary>
         /// <param name="onObserve">Function to execute on resize</param>
         /// <param name="targetElements">Elements to observe</param>
@@ -37,11 +37,11 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// <exception cref="ArgumentException">Thrown if targetElements is an empty array</exception>
         public Task<ResizeTask> RegisterObserver(Action<JsResizeObserverEntry[]> onObserve, params ElementReference[] targetElements)
         {
-            return RegisterObserver((entries) => { onObserve(entries); return Task.CompletedTask; }, targetElements);
+            return ValidateObserverRegistration((entries) => { onObserve(entries); return ValueTask.CompletedTask; }, targetElements);
         }
 
         /// <summary>
-        /// Register a function to execute on resize of any one of the elements
+        /// Register an async function to execute on resize of any one of the elements
         /// </summary>
         /// <param name="onObserve">Function to execute on resize</param>
         /// <param name="targetElements">Elements to observe</param>
@@ -49,6 +49,12 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// <exception cref="ArgumentNullException">Thrown if any of the arguments is null</exception>
         /// <exception cref="ArgumentException">Thrown if targetElements is an empty array</exception>
         public Task<ResizeTask> RegisterObserver(Func<JsResizeObserverEntry[], Task> onObserve, params ElementReference[] targetElements)
+        {
+            return ValidateObserverRegistration(async (entries) => await onObserve(entries), targetElements);
+        }
+
+        
+        private Task<ResizeTask> ValidateObserverRegistration(Func<JsResizeObserverEntry[], ValueTask> onObserve, params ElementReference[] targetElements)
         {
             if (onObserve is null)
                 throw new ArgumentNullException(nameof(onObserve));
@@ -62,7 +68,7 @@ namespace BlazorObservers.ObserverLibrary.Services
             return DoObserverRegistration(onObserve, targetElements);
         }
 
-        private async Task<ResizeTask> DoObserverRegistration(Func<JsResizeObserverEntry[], Task> onObserve, params ElementReference[] targetElements)
+        private async Task<ResizeTask> DoObserverRegistration(Func<JsResizeObserverEntry[], ValueTask> onObserve, params ElementReference[] targetElements)
         {
             var module = await _moduleTask.Value;
             var task = new ResizeTask(onObserve);
