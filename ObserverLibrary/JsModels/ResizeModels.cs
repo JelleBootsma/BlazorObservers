@@ -41,6 +41,10 @@ namespace BlazorObservers.ObserverLibrary.JsModels
         /// Element correspoding to the sizes in ContentRect, BorderBoxSize and ContentBoxSize
         /// </summary>
         public ElementReference? TargetElement { get; set; }
+        
+        /// <summary>
+        /// Tracking Id to match element from JS to ElementReference in C#
+        /// </summary>
         [JsonPropertyName("targetTrackingId")]
         public string? TargetElementTrackingId { get; set; }
     }
