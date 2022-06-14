@@ -22,6 +22,7 @@ Currently only Resize observer is present.</Description>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageTags>ASP.NET;Blazor;Resize;</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\README.md">
