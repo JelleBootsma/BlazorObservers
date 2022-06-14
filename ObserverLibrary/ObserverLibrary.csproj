@@ -7,7 +7,7 @@
     <RootNamespace>BlazorObservers.ObserverLibrary</RootNamespace>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Company>Author-e</Company>
     <Authors>JelleBootsma</Authors>
     <Product>BlazorObservers</Product>
@@ -22,7 +22,8 @@ Currently only Resize observer is present.</Description>
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageTags>ASP.NET;Blazor;Resize;</PackageTags>
+    <PackageTags>ASP.NET;Blazor;Resize;ResizeObserver;Observer;</PackageTags>
+    <PackageReleaseNotes>Tag update</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\README.md">
