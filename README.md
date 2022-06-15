@@ -1,3 +1,4 @@
+[![NuGet Badge](https://buildstats.info/nuget/BlazorObservers)](https://www.nuget.org/packages/BlazorObservers/)
 # BlazorObservers
 
 BlazorObservers is a set of Blazor wrappers around the JavaScript Observer functionality. 
