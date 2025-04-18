@@ -36,6 +36,11 @@ Currently only Resize observer is present.</Description>
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>ObserverLibraryTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
