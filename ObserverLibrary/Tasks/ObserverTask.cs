@@ -38,7 +38,7 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         /// <exception cref="ArgumentException"></exception>
         public void OnlyTriggerLast(int delay)
         {
-            if (delay < 0) throw new ArgumentException("Delay can not be negative");
+            if (delay < 0) throw new ArgumentException($"{nameof(delay)} must be positive");
             _paused = false;
             _delay = delay;
             _delayTriggering = true;

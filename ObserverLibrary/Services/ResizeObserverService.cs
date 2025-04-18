@@ -37,6 +37,9 @@ namespace BlazorObservers.ObserverLibrary.Services
         /// <exception cref="ArgumentException">Thrown if targetElements is an empty array</exception>
         public Task<ResizeTask> RegisterObserver(Action<JsResizeObserverEntry[]> onObserve, params ElementReference[] targetElements)
         {
+            if (onObserve is null)
+                throw new ArgumentNullException(nameof(onObserve));
+
             return ValidateObserverRegistration((entries) => { onObserve(entries); return ValueTask.CompletedTask; }, targetElements);
         }
 
