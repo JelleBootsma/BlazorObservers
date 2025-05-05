@@ -48,7 +48,7 @@
 					OnIntersectionChange, 
 					new JsIntersectionObserverOptions { 
 						Root = scrollContainer.Value,
-							Threshold = Enumerable.Range(0, 101).Select(x => x / 100d) // Trigger callback at every 1% change
+						Threshold = Enumerable.Range(0, 101).Select(x => x/100d) // Trigger callback at every 1% change
 					},
 					scrollContent.Value);
 			}
