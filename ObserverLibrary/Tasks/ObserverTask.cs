@@ -1,12 +1,13 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BlazorObservers.ObserverLibrary.Tasks
 {
     /// <summary>
     /// Abstract base class for handles of C# task, which is executed after observer trigger.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class ObserverTask<T>
+    /// <typeparam name="T">The type of data provided to callback delegate on observer trigger.</typeparam>
+    public abstract class ObserverTask<T> 
     {
         private bool _paused = false;
         private bool _delayTriggering = false;
@@ -19,6 +20,7 @@ namespace BlazorObservers.ObserverLibrary.Tasks
         /// Unique identifier of this Task
         /// </summary>
         public Guid TaskId { get; } = Guid.NewGuid();
+        internal Dictionary<Guid, ElementReference> ConnectedElements { get; } = new Dictionary<Guid, ElementReference>();
 
         private protected ObserverTask(Func<T, ValueTask> taskFunc)
         {
@@ -81,13 +83,13 @@ namespace BlazorObservers.ObserverLibrary.Tasks
             }
             _executionCount++;
             ulong runNumber = _executionCount;
-            
+
             // Wait for the delay
             await Task.Delay(_delay);
 
             // Check if this execution is still the latest run
             if (runNumber < _executionCount) return;
-            
+
             // Execute
             await _taskFunc(jsData);
         }
