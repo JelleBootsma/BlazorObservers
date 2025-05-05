@@ -1,0 +1,63 @@
+﻿@page "/intersection"
+@inject IntersectionObserverService IntersectionObserverService
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<PageTitle>Intersection</PageTitle>
+
+<h1>Intersection Observer Demo</h1>
+
+<div @ref=scrollContainer class="contents">
+	<div class="wrapper">
+		<div @ref=scrollContent class="sampleBox" style="height: 200px; background-color: rgb(@(redValue), 0, 0)">
+			<div class="label topLeft">@(percentageLabel)%</div>
+			<div class="label topRight">@(percentageLabel)%</div>
+			<div class="label bottomLeft">@(percentageLabel)%</div>
+			<div class="label bottomRight">@(percentageLabel)%</div>
+		</div>	
+	</div>
+</div>
+
+@code {
+
+	private ElementReference? scrollContainer;
+	private ElementReference? scrollContent;
+	private int redValue = 0;
+	private int percentageLabel = 0;
+
+	private IntersectionTask? taskReference;
+
+	private void OnIntersectionChange(JsIntersectionObserverEntry[] entries)
+	{
+		var entry = entries.Single();
+		percentageLabel = (int)(entry.IntersectionRatio * 100); // 0-100
+		redValue = (int)(entry.IntersectionRatio * 255); // 0-255
+		StateHasChanged();
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+
+			// create the intersection observer task
+			if (taskReference is null && scrollContainer.HasValue && scrollContent.HasValue)
+			{
+				// create the observer
+				taskReference = await IntersectionObserverService.RegisterObserver(
+					OnIntersectionChange, 
+					new JsIntersectionObserverOptions { 
+						Root = scrollContainer.Value,
+							Threshold = Enumerable.Range(0, 101).Select(x => x / 100d) // Trigger callback at every 1% change
+					},
+					scrollContent.Value);
+			}
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (taskReference is not null)
+			await IntersectionObserverService.DeregisterObserver(taskReference);
+	}
+}

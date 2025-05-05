@@ -48,57 +48,5 @@ namespace BlazorObservers.ObserverLibrary.JsModels
         [JsonPropertyName("targetTrackingId")]
         public string? TargetElementTrackingId { get; set; }
     }
-    /// <summary>
-    /// Model for ResizeObserverSize javascript models
-    /// </summary>
-    public struct JsResizeObserverSize {
-        /// <summary>
-        /// The length of the observed element's content box in the block dimension.
-        /// 
-        /// https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize#value
-        /// </summary>
-        [JsonPropertyName("blockSize")]
-        public double BlockSize { get; set; }
-
-        /// <summary>
-        /// The length of the observed element's content box in the inline dimension.
-        /// 
-        /// https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserverEntry/contentBoxSize#value
-        /// </summary>
-        [JsonPropertyName("inlineSize")]
-        public double InlineSize { get; set; }
-    }
-
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-
-    /// <summary>
-    /// Model for DomRectReadOnly javascript objects
-    /// </summary>
-    public struct JsDomRect
-    {
-        [JsonPropertyName("x")]
-        public double X { get; set; }
-
-        [JsonPropertyName("y")]
-        public double Y { get; set; }
-
-        [JsonPropertyName("width")]
-        public double Width { get; set; }
-
-        [JsonPropertyName("height")]
-        public double Height { get; set; }
-
-        [JsonPropertyName("top")]
-        public double Top { get; set; }
-
-        [JsonPropertyName("right")]
-        public double Right { get; set; }
-
-        [JsonPropertyName("bottom")]
-        public double Bottom { get; set; }
-
-        [JsonPropertyName("left")]
-        public double Left { get; set; }
-    }
 }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

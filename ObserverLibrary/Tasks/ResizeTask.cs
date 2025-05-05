@@ -11,10 +11,8 @@ namespace BlazorObservers.ObserverLibrary.Tasks
     /// </summary>
     public class ResizeTask : ObserverTask<JsResizeObserverEntry[]>
     {
-        internal Dictionary<Guid, ElementReference> ConnectedElements { get; set; }
         internal ResizeTask(Func<JsResizeObserverEntry[], ValueTask> taskFunc) : base(taskFunc)
         {
-            ConnectedElements = new Dictionary<Guid, ElementReference>();
         }
 
         /// <summary>

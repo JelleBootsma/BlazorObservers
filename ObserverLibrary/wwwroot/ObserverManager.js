@@ -1,6 +1,3 @@
-// This is a JavaScript module that is loaded on demand. It can export any number of
-// functions, and may import other JavaScript modules if required.
-
 
 export class ObserverManager {
 
@@ -17,7 +14,7 @@ export class ObserverManager {
         );
     }
 
-    static ActiveResizeObservers = {};
+    static ActiveObservers = {};
 
     /**
      * Register a resize observer
@@ -27,34 +24,73 @@ export class ObserverManager {
      * @returns {string[]} Generated ids for the tracked elements in the same order as the given elements 
      */
     static CreateNewResizeObserver(id, dotNetRef, ...els) {
-        let callback = (entries, obsCallback) => {
-            let dotNetArguments = [];
-            for (let entry of entries) {
-                dotNetArguments.push(this.#CreateDotNetCallbackObject(entry, id))
+        const callback = (entries, obsCallback) => {
+            const dotNetArguments = [];
+            for (const entry of entries) {
+                dotNetArguments.push(this.#CreateResizeCallbackObject(entry, id))
             }
             dotNetRef.invokeMethodAsync("Execute", dotNetArguments);
         }
-        let obs = new ResizeObserver(callback)
-        let ids = [];
+        const obs = new ResizeObserver(callback)
+        const ids = [];
 
-        for (let el of els) {
-            let elementTrackingId = this.#GetGuid();
-            el.setAttribute(this.#GetResizeTrackingAttributeName(id), elementTrackingId);
+        for (const el of els) {
+            const elementTrackingId = this.#GetGuid();
+            el.setAttribute(this.#GetObserverTrackingAttributeName(id), elementTrackingId);
             ids.push(elementTrackingId);
             obs.observe(el);
         }
-        this.ActiveResizeObservers[id] = obs;
+        this.ActiveObservers[id] = obs;
         return ids;
     }
 
     /**
-    * Disconnect and delete a resize observer
+     * Register an intersection observer
+     * @param {string} id
+     * @param {object} dotNetRef
+     * @param {IntersectionObserverInit} options
+     * @param {...Element} els
+     * @returns {string[]} Generated ids for the tracked elements in the same order as the given elements 
+     */
+    static CreateNewIntersectionObserver(id, dotNetRef, options, ...els) {
+        const callback = (entries, obsCallback) => {
+            const dotNetArguments = [];
+            for (const entry of entries) {
+                dotNetArguments.push(this.#CreateIntersectionCallbackObject(entry, id))
+            }
+            dotNetRef.invokeMethodAsync("Execute", dotNetArguments);
+        }
+        const obs = new IntersectionObserver(callback, options)
+        const ids = [];
+        for (const el of els) {
+            const elementTrackingId = this.#GetGuid();
+            el.setAttribute(this.#GetObserverTrackingAttributeName(id), elementTrackingId);
+            ids.push(elementTrackingId);
+            obs.observe(el);
+        }
+        this.ActiveObservers[id] = obs;
+        return ids;
+    }
+
+
+    /**
+     * (Deprecated) Disconnect and delete a existing observer
+     * Exists for backwards compatibility with the old API to avoid cache mismatch issues
+     * @param {string} observerId
+     * @returns
+     */
+    static RemoveResizeObserver(observerId) {
+        return this.RemoveObserver(observerId);
+    }
+
+    /**
+    * Disconnect and delete a existing observer
     * @param {string} observerId
     */
-    static RemoveResizeObserver(observerId) {
-        if (!this.ActiveResizeObservers[observerId]) return;
-        this.ActiveResizeObservers[observerId].disconnect();
-        delete this.ActiveResizeObservers[observerId];
+    static RemoveObserver(observerId) {
+        if (!this.ActiveObservers[observerId]) return;
+        this.ActiveObservers[observerId].disconnect();
+        delete this.ActiveObservers[observerId];
     }
 
     /**
@@ -64,10 +100,10 @@ export class ObserverManager {
      */
     static StartObserving(observerId, element) {
 
-        if (!this.ActiveResizeObservers[observerId]) return null;
-        let obs = this.ActiveResizeObservers[observerId];
+        if (!this.ActiveObservers[observerId]) return null;
+        let obs = this.ActiveObservers[observerId];
         let elementTrackingId = this.#GetGuid();
-        element.setAttribute(this.#GetResizeTrackingAttributeName(observerId), elementTrackingId);
+        element.setAttribute(this.#GetObserverTrackingAttributeName(observerId), elementTrackingId);
         obs.observe(element);
         return elementTrackingId;
     }
@@ -78,35 +114,55 @@ export class ObserverManager {
      * @param {Element} element
      */
     static StopObserving(observerId, element) {
-        if (!this.ActiveResizeObservers[observerId]) return false;
-        let obs = this.ActiveResizeObservers[observerId];
+        if (!this.ActiveObservers[observerId]) return false;
+        let obs = this.ActiveObservers[observerId];
         obs.unobserve(element);
-        element.removeAttribute(this.#GetResizeTrackingAttributeName(observerId));
+        element.removeAttribute(this.#GetObserverTrackingAttributeName(observerId));
         return true;
     }
 
     /**
-     * Generate serializable object for DotNET
+     * Generate serializable resize object for DotNET
      * @param {ResizeObserverEntry} callbackEl
      * @param {string} observerId
      * @returns {object} Serialize object with all required info for dotNet
      */
-    static #CreateDotNetCallbackObject(callbackEl, observerId) {
+    static #CreateResizeCallbackObject(callbackEl, observerId) {
         let result = {};
         result.borderBoxSize = this.#ConvertResizeObserverSizeObject(callbackEl.borderBoxSize[0]);
         result.contentBoxSize = this.#ConvertResizeObserverSizeObject(callbackEl.contentBoxSize[0]);
         result.contentRect = callbackEl.contentRect;
-        result.targetTrackingId = callbackEl.target.getAttribute(this.#GetResizeTrackingAttributeName(observerId));
+        result.targetTrackingId = callbackEl.target.getAttribute(this.#GetObserverTrackingAttributeName(observerId));
         return result;
+    }
+
+    /**
+     * Generate serializable intersection object for DotNET
+     * @param {IntersectionObserverEntry} callbackEl
+     * @param {string} observerId
+     * @returns {object} Serialize object with all required info for dotNet
+     */
+    static #CreateIntersectionCallbackObject(callbackEl, observerId) {
+        return {
+            time: callbackEl.time,
+            rootBounds: callbackEl.rootBounds || null,
+            boundingClientRect: callbackEl.boundingClientRect,
+            intersectionRect: callbackEl.intersectionRect,
+            isIntersecting: callbackEl.isIntersecting,
+            intersectionRatio: callbackEl.intersectionRatio,
+            targetTrackingId: callbackEl.target.getAttribute(this.#GetObserverTrackingAttributeName(observerId))
+        };
     }
 
     /**
      * Get the attribute name used to track elements belonging to a specific observer
      * @param {string} observerId
      */
-    static #GetResizeTrackingAttributeName(observerId) {
-        return `ResizeElementTrackingId-${observerId}`;
+    static #GetObserverTrackingAttributeName(observerId) {
+        return `ObserverElementTrackingId-${observerId}`;
     }
+
+
 
     /**
      * Convert a ResizeObserverSize object to a serializable object

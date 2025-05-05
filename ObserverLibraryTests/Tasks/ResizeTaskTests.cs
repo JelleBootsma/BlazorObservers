@@ -39,8 +39,8 @@ namespace BlazorObservers.ObserverLibrary.Tests.Tasks
             await _resizeTask.Execute(entries);
 
             // Assert
-            Assert.AreEqual(1, _executedData.Count);
-            Assert.AreEqual(element, entries[0].TargetElement);
+            Assert.That(_executedData.Count, Is.EqualTo(1));
+            Assert.That(entries[0].TargetElement, Is.EqualTo(element));
         }
 
         [Test]
@@ -56,8 +56,8 @@ namespace BlazorObservers.ObserverLibrary.Tests.Tasks
             await _resizeTask.Execute(entries);
 
             // Assert
-            Assert.AreEqual(1, _executedData.Count);
-            Assert.IsNull(entries[0].TargetElement);
+            Assert.That(_executedData.Count, Is.EqualTo(1));
+            Assert.That(entries[0].TargetElement, Is.Null);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace BlazorObservers.ObserverLibrary.Tests.Tasks
             await _resizeTask.Execute(entries);
 
             // Assert
-            Assert.IsEmpty(_executedData);
+            Assert.That(_executedData, Is.Empty);
         }
 
         [Test]
@@ -96,15 +96,14 @@ namespace BlazorObservers.ObserverLibrary.Tests.Tasks
             var valueTask1 = _resizeTask.Execute(entries1);
             var valueTask2 = _resizeTask.Execute(entries2);
 
-            // Wait long enough to trigger debounce
-            await Task.Delay(200);
+            await Task.Delay(200); // Wait long enough to trigger debounce
 
             await valueTask1;
             await valueTask2;
 
             // Assert
-            Assert.AreEqual(1, _executedData.Count);
-            Assert.AreEqual(entries2, _executedData[0]); // Only latest should execute
+            Assert.That(_executedData.Count, Is.EqualTo(1));
+            Assert.That(_executedData[0], Is.EqualTo(entries2));
         }
 
         [Test]
@@ -122,7 +121,7 @@ namespace BlazorObservers.ObserverLibrary.Tests.Tasks
             await _resizeTask.Execute(entries);
 
             // Assert
-            Assert.AreEqual(1, _executedData.Count);
+            Assert.That(_executedData.Count, Is.EqualTo(1));
         }
     }
 }
